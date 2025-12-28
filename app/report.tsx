@@ -27,10 +27,11 @@ import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 
 export default function ReportScreen() {
-  const params = useLocalSearchParams<{ imageUri: string }>();
+  const params = useLocalSearchParams<{ imageUri: string; reportId?: string }>();
   const router = useRouter();
-  const { addReport } = useApp();
+  const { addReport, reports, updateReport, showToast } = useApp();
   
+  const [report, setReport] = useState<Report | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<IssueCategory | null>(null);
   const [description, setDescription] = useState('');
   const [location, setLocation] = useState<{
@@ -158,35 +159,61 @@ Also provide a brief description of what you see (2-3 sentences).`
   }, []);
 
   useEffect(() => {
-    if (params.imageUri) {
+    // Reset success state when params change
+    setIsSuccess(false);
+
+    if (params.reportId) {
+      const existingReport = reports.find(r => r.id === params.reportId);
+      if (existingReport) {
+        setReport(existingReport);
+        setSelectedCategory(existingReport.category);
+        setDescription(existingReport.description);
+        setLocation(existingReport.location);
+      }
+    } else if (params.imageUri) {
+      // Clear old report data when creating a new one
+      setReport(null);
+      setSelectedCategory(null);
+      setDescription('');
       analyzeImageMutation.mutate(params.imageUri);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [params.imageUri]);
+  }, [params.reportId, params.imageUri, reports]);
 
   const submitReport = () => {
-    if (!selectedCategory || !location || !params.imageUri) {
-      Alert.alert('Error', 'Please select a category and ensure location is available');
+    if (!selectedCategory || !location || !(params.imageUri || report?.imageUri)) {
+      Alert.alert('Error', 'Missing required report data.');
       return;
     }
 
     const categoryConfig = CATEGORY_CONFIG[selectedCategory];
     const points = categoryConfig.points;
     
-    const report: Report = {
-      id: Date.now().toString(),
-      category: selectedCategory,
-      imageUri: params.imageUri,
-      description: description || `${categoryConfig.label} issue reported`,
-      location,
-      timestamp: Date.now(),
-      points: points,
-      status: 'submitted'
-    };
-
-    addReport(report);
-    setEarnedPoints(points);
-    setIsSuccess(true);
+    if (report) {
+      // Update existing report
+      const updatedReport: Report = {
+        ...report,
+        category: selectedCategory,
+        description: description,
+      };
+      updateReport(updatedReport);
+      showToast('Report updated successfully!');
+      router.back(); // Go back to the feed
+    } else {
+      // Create new report
+      const newReport: Report = {
+        id: Date.now().toString(),
+        category: selectedCategory,
+        imageUri: params.imageUri!,
+        description: description || `${categoryConfig.label} issue reported`,
+        location,
+        timestamp: Date.now(),
+        points: points,
+        status: 'submitted'
+      };
+      addReport(newReport);
+      setEarnedPoints(points);
+      setIsSuccess(true);
+    }
   };
 
   if (isSuccess) {
@@ -225,11 +252,13 @@ Also provide a brief description of what you see (2-3 sentences).`
     );
   }
 
-  if (!params.imageUri) {
+  const imageUri = report?.imageUri || params.imageUri;
+
+  if (!imageUri) {
     return (
       <SafeAreaView style={styles.container} edges={['bottom']}>
         <View style={styles.errorContainer}>
-          <Text style={styles.errorText}>NO SIGNAL DETECTED</Text>
+          <Text style={styles.errorText}>NO IMAGE DATA</Text>
         </View>
       </SafeAreaView>
     );
@@ -244,9 +273,9 @@ Also provide a brief description of what you see (2-3 sentences).`
       >
         <View style={styles.imageContainer}>
             <Image 
-            source={{ uri: params.imageUri }} 
-            style={styles.image}
-            resizeMode="cover"
+              source={{ uri: imageUri }}
+              style={styles.image}
+              resizeMode="cover"
             />
             <View style={styles.imageOverlay}>
                 <View style={styles.hudChip}>
@@ -257,13 +286,13 @@ Also provide a brief description of what you see (2-3 sentences).`
         </View>
 
         <View style={styles.content}>
-          <Text style={styles.kicker}>{'// INCIDENT REPORT'}</Text>
-          <Text style={styles.headerTitle}>New Entry</Text>
+          <Text style={styles.kicker}>{`// REPORT #${(report?.id || '').slice(-4)}`}</Text>
+          <Text style={styles.headerTitle}>{report ? 'Edit Entry' : 'New Entry'}</Text>
           
           <Card variant="glass" style={styles.sectionCard}>
              <View style={styles.sectionHeader}>
                 <Text style={styles.sectionTitle}>CLASSIFICATION</Text>
-                {analyzeImageMutation.isPending && <ActivityIndicator size="small" color={Theme.tokens.color.accent.primary} />}
+                {(analyzeImageMutation.isPending && !report) && <ActivityIndicator size="small" color={Theme.tokens.color.accent.primary} />}
              </View>
 
              <View style={styles.categoriesGrid}>
@@ -320,7 +349,7 @@ Also provide a brief description of what you see (2-3 sentences).`
 
           <View style={styles.actionContainer}>
             <Button 
-                title="INITIATE UPLOAD" 
+                title={report ? "UPDATE REPORT" : "INITIATE UPLOAD"}
                 variant={(!selectedCategory || !location) ? 'secondary' : 'primary'}
                 onPress={submitReport}
                 disabled={!selectedCategory || !location}

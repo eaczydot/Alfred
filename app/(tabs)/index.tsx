@@ -1,11 +1,12 @@
 import React, { useState, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, ActivityIndicator } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { router } from 'expo-router';
-import { Zap, List as ListIcon, User } from 'lucide-react-native';
+import { Zap, List as ListIcon, User, Bolt } from 'lucide-react-native';
 import { Theme } from '@/constants/theme';
 import { Button } from '@/components/ui/Button';
 import * as Location from 'expo-location';
+import { useQuickSubmit } from '@/hooks/useQuickSubmit';
 
 
 
@@ -13,6 +14,7 @@ export default function CameraScreen() {
   const [permission, requestPermission] = useCameraPermissions();
   const [locationPermission, requestLocationPermission] = Location.useForegroundPermissions();
   const cameraRef = useRef<CameraView>(null);
+  const { isSubmitting, handleQuickSubmit } = useQuickSubmit();
   const [facing, setFacing] = useState<'back' | 'front'>('back');
   const [torch, setTorch] = useState<boolean>(false);
   const [isRecording, setIsRecording] = useState(false);
@@ -145,6 +147,18 @@ export default function CameraScreen() {
                   <User size={24} color={Theme.tokens.color.text.primary} />
                   <Text style={styles.profileLabel}>Profile</Text>
                </TouchableOpacity> 
+
+              <TouchableOpacity
+                onPress={() => handleQuickSubmit(cameraRef)}
+                style={[styles.quickSubmitButton, isSubmitting && styles.quickSubmitButtonLoading]}
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? (
+                  <ActivityIndicator color={Theme.tokens.color.accent.primary} />
+                ) : (
+                  <Bolt size={24} color={Theme.tokens.color.accent.primary} />
+                )}
+              </TouchableOpacity>
             </View>
           </View>
         </SafeAreaView>
@@ -237,8 +251,22 @@ const styles = StyleSheet.create({
   },
   captureRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'space-around',
     alignItems: 'center',
+  },
+  quickSubmitButton: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: 'rgba(0, 229, 255, 0.1)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: Theme.tokens.color.accent.primary,
+  },
+  quickSubmitButtonLoading: {
+    transform: [{ scale: 1.1 }],
+    backgroundColor: 'rgba(0, 229, 255, 0.2)',
   },
   feedButton: {
     alignItems: 'center',

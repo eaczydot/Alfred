@@ -1,5 +1,5 @@
 import React from 'react';
-import { TouchableOpacity, Text, StyleSheet, TouchableOpacityProps, TextStyle, Platform } from 'react-native';
+import { TouchableOpacity, Text, StyleSheet, TouchableOpacityProps, TextStyle, Platform, ActivityIndicator } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { Theme } from '@/constants/theme';
 
@@ -9,6 +9,7 @@ interface ButtonProps extends TouchableOpacityProps {
   size?: 'sm' | 'md' | 'lg';
   icon?: React.ReactNode;
   textStyle?: TextStyle;
+  loading?: boolean;
 }
 
 export function Button({ 
@@ -19,10 +20,15 @@ export function Button({
   style, 
   textStyle,
   onPress,
+  loading = false,
+  disabled = false,
   ...props 
 }: ButtonProps) {
   
+  const isDisabled = loading || disabled;
+
   const handlePress = (e: any) => {
+    if (isDisabled) return;
     if (Platform.OS !== 'web') {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
@@ -35,23 +41,35 @@ export function Button({
         styles.base,
         styles[variant],
         styles[size],
+        isDisabled && styles.disabled,
         style
       ]}
       onPress={handlePress}
       activeOpacity={0.7}
+      disabled={isDisabled}
+      accessibilityState={{ disabled: isDisabled }}
       {...props}
     >
-      {icon}
-      {title && (
-        <Text style={[
-          styles.text, 
-          styles[`text${variant.charAt(0).toUpperCase() + variant.slice(1)}` as keyof typeof styles],
-          styles[`textSize${size.charAt(0).toUpperCase() + size.slice(1)}` as keyof typeof styles],
-          icon ? { marginLeft: 8 } : {},
-          textStyle
-        ]}>
-          {title}
-        </Text>
+      {loading ? (
+        <ActivityIndicator
+          color={variant === 'primary' ? '#000' : Theme.tokens.color.text.primary}
+          size="small"
+        />
+      ) : (
+        <>
+          {icon}
+          {title && (
+            <Text style={[
+              styles.text,
+              styles[`text${variant.charAt(0).toUpperCase() + variant.slice(1)}` as keyof typeof styles],
+              styles[`textSize${size.charAt(0).toUpperCase() + size.slice(1)}` as keyof typeof styles],
+              icon ? { marginLeft: 8 } : {},
+              textStyle
+            ]}>
+              {title}
+            </Text>
+          )}
+        </>
       )}
     </TouchableOpacity>
   );
@@ -64,6 +82,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderRadius: Theme.tokens.radius.pill,
     borderWidth: 1,
+  },
+  disabled: {
+    opacity: 0.5,
   },
   // Variants
   primary: {

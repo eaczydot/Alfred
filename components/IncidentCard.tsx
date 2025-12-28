@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, ViewStyle } from 'react-native';
+import { View, Text, StyleSheet, Image, ViewStyle, TouchableOpacity } from 'react-native';
+import { router } from 'expo-router';
 import { MapPin } from 'lucide-react-native';
 import { Theme } from '@/constants/theme';
 import { Card } from '@/components/ui/Card';
@@ -29,13 +30,17 @@ export function IncidentCard({ report, style }: IncidentCardProps) {
   };
 
   return (
-    <Card 
-      variant="glass"
-      style={[styles.reportCard, style]}
+    <TouchableOpacity
+      activeOpacity={0.8}
+      onPress={() => router.push({ pathname: '/report', params: { reportId: report.id }})}
     >
-      <View style={styles.cardHeader}>
-           <View style={styles.userRow}>
-               <View style={styles.avatarPlaceholder} />
+      <Card
+        variant="glass"
+        style={[styles.reportCard, style]}
+      >
+        <View style={styles.cardHeader}>
+             <View style={styles.userRow}>
+                 <View style={styles.avatarPlaceholder} />
                {/* Simulate an anonymous ID if not present in report */}
                <Text style={styles.username}>CITIZEN {report.id.slice(-4)}</Text>
            </View>
@@ -69,7 +74,8 @@ export function IncidentCard({ report, style }: IncidentCardProps) {
           </View>
         )}
       </View>
-    </Card>
+      </Card>
+    </TouchableOpacity>
   );
 }
 

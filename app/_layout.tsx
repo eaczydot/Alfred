@@ -4,16 +4,21 @@ import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import React, { useEffect } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { AppProvider } from "@/contexts/AppContext";
+import { AppProvider, useApp } from "@/contexts/AppContext";
 import { StatusBar } from "expo-status-bar";
 import { Theme } from "@/constants/theme";
+import { Toast } from "@/components/ui/Toast";
+
 
 SplashScreen.preventAutoHideAsync();
 
 const queryClient = new QueryClient();
 
 function RootLayoutNav() {
+  const { toast, setToast } = useApp();
+
   return (
+    <>
     <Stack screenOptions={{ 
       headerBackTitle: "BACK",
       headerStyle: {
@@ -42,6 +47,14 @@ function RootLayoutNav() {
         }} 
       />
     </Stack>
+      {toast && (
+        <Toast
+          key={toast.key}
+          message={toast.message}
+          onHide={() => setToast(null)}
+        />
+      )}
+    </>
   );
 }
 

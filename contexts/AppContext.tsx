@@ -16,6 +16,12 @@ export const [AppProvider, useApp] = createContextHook(() => {
     achievements: ACHIEVEMENTS.map(a => ({ ...a, unlocked: false }))
   });
   const [isLoading, setIsLoading] = useState(true);
+  const [toast, setToast] = useState<{ message: string; key: number } | null>(null);
+
+
+  const showToast = (message: string) => {
+    setToast({ message, key: Date.now() });
+  };
 
   const loadData = useCallback(async () => {
     try {
@@ -79,10 +85,20 @@ export const [AppProvider, useApp] = createContextHook(() => {
     saveData(newReports, newStats);
   };
 
+  const updateReport = (updatedReport: Report) => {
+    const newReports = reports.map(r => r.id === updatedReport.id ? updatedReport : r);
+    setReports(newReports);
+    saveData(newReports, stats);
+  };
+
   return {
     reports,
     stats,
     isLoading,
-    addReport
+    addReport,
+    updateReport,
+    toast,
+    showToast,
+    setToast,
   };
 });

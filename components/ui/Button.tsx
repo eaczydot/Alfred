@@ -69,6 +69,7 @@ const styles = StyleSheet.create({
   primary: {
     backgroundColor: Theme.tokens.color.accent.primary,
     borderColor: Theme.tokens.color.accent.primary,
+    ...Theme.tokens.shadow.glow,
   },
   secondary: {
     backgroundColor: Theme.tokens.color.surface.card,
@@ -107,7 +108,7 @@ const styles = StyleSheet.create({
     fontFamily: Theme.tokens.typography.fontFamily.ui,
   },
   textPrimary: {
-    color: '#000', // Black text for better contrast on bright Cyan
+    color: Theme.tokens.color.text.onAccent,
   },
   textSecondary: {
     color: Theme.tokens.color.text.primary,

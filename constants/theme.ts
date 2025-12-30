@@ -19,23 +19,24 @@ const monoFont =
 export const Theme = {
   tokens: {
     color: {
-      bg: ['#030712', '#050b18', '#0a1224'],
+      bg: ['#010101', '#0f111a', '#1a1a1a'],
       surface: {
-        card: 'rgba(255,255,255,0.04)',
-        raised: 'rgba(255,255,255,0.06)'
+        card: 'rgba(255,255,255,0.05)',
+        raised: 'rgba(255,255,255,0.08)'
       },
       text: {
-        primary: '#f8fafc',
-        secondary: '#cbd5e1',
-        tertiary: '#94a3b8'
+        primary: '#ffffff',
+        secondary: 'rgba(255,255,255,0.72)',
+        tertiary: 'rgba(255,255,255,0.48)',
+        onAccent: '#ffffff'
       },
       border: {
-        default: 'rgba(255,255,255,0.08)',
-        accent: 'rgba(0,229,255,0.35)'
+        default: 'rgba(255,255,255,0.12)',
+        accent: 'rgba(5,64,244,0.45)'
       },
       accent: {
-        primary: '#00e5ff',
-        secondary: '#8b5cf6',
+        primary: '#0540F4',
+        secondary: '#0b6bff',
         info: '#fbbf24'
       },
       status: {
@@ -58,18 +59,18 @@ export const Theme = {
     },
     shadow: {
       soft: {
-        shadowColor: '#00e5ff',
-        shadowOpacity: 0.08,
-        shadowRadius: 18,
-        shadowOffset: { width: 0, height: 12 },
-        elevation: 8
-      },
-      glow: {
-        shadowColor: '#fbbf24',
-        shadowOpacity: 0.06,
+        shadowColor: '#000',
+        shadowOpacity: 0.24,
         shadowRadius: 16,
         shadowOffset: { width: 0, height: 10 },
         elevation: 6
+      },
+      glow: {
+        shadowColor: '#0540F4',
+        shadowOpacity: 0.16,
+        shadowRadius: 14,
+        shadowOffset: { width: 0, height: 8 },
+        elevation: 4
       }
     }
   }

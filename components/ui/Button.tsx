@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
     fontFamily: Theme.tokens.typography.fontFamily.ui,
   },
   textPrimary: {
-    color: '#000', // Black text for better contrast on bright Cyan
+    color: Theme.tokens.color.text.onAccent,
   },
   textSecondary: {
     color: Theme.tokens.color.text.primary,

@@ -117,7 +117,10 @@ export default function ProfileScreen() {
                         <View style={[
                             styles.achievementIcon,
                             achievement.unlocked 
-                            ? { borderColor: Theme.tokens.color.accent.primary }
+                            ? {
+                                borderColor: Theme.tokens.color.accent.primary,
+                                backgroundColor: 'rgba(0, 229, 255, 0.1)',
+                              }
                             : { borderColor: Theme.tokens.color.border.default }
                         ]}>
                             <IconComponent 

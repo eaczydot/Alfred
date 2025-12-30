@@ -56,16 +56,17 @@ const styles = StyleSheet.create({
   },
   glassContainer: {
     backgroundColor: Platform.select({
-      web: 'rgba(11, 15, 24, 0.6)', 
-      default: 'rgba(11, 15, 24, 0.4)' // Slightly more transparent on native to let blur do work
+      web: Theme.tokens.color.surface.glassStrong,
+      default: Theme.tokens.color.surface.glass, // Slightly more transparent on native to let blur do work
     }),
+    borderColor: Theme.tokens.color.accent.primary,
     ...Platform.select({
       web: {
         backdropFilter: 'blur(20px)',
-        shadowColor: "transparent",
+        shadowColor: Theme.tokens.color.accent.primary,
       },
       default: {
-        shadowColor: "transparent",
+        shadowColor: Theme.tokens.color.accent.primary,
       }
     }),
   },

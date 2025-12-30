@@ -69,6 +69,7 @@ const styles = StyleSheet.create({
   primary: {
     backgroundColor: Theme.tokens.color.accent.primary,
     borderColor: Theme.tokens.color.accent.primary,
+    ...Theme.tokens.shadow.glow,
   },
   secondary: {
     backgroundColor: Theme.tokens.color.surface.card,

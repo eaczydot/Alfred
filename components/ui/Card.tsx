@@ -41,24 +41,18 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: Theme.tokens.radius.lg, // 16 matches closer to 18
     padding: 22,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 12,
-    },
-    shadowOpacity: 0.22,
-    shadowRadius: 35,
-    elevation: 5,
     overflow: 'hidden',
+    ...Theme.tokens.shadow.soft,
   },
   defaultContainer: {
     backgroundColor: Theme.tokens.color.surface.card,
   },
   glassContainer: {
     backgroundColor: Platform.select({
-      web: 'rgba(11, 15, 24, 0.6)', 
+      web: 'rgba(11, 15, 24, 0.6)',
       default: 'rgba(11, 15, 24, 0.4)' // Slightly more transparent on native to let blur do work
     }),
+    borderColor: Theme.tokens.color.border.accent,
     ...Platform.select({
       web: {
         backdropFilter: 'blur(20px)',

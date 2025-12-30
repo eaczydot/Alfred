@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
     borderColor: Theme.tokens.color.border.default,
     borderWidth: 1,
     borderRadius: Theme.tokens.radius.lg, // 16 matches closer to 18
-    padding: 22,
+    padding: Theme.tokens.spacing.xl + Theme.tokens.spacing.xs,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,

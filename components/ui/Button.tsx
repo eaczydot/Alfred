@@ -44,10 +44,10 @@ export function Button({
       {icon}
       {title && (
         <Text style={[
-          styles.text, 
+          styles.text,
           styles[`text${variant.charAt(0).toUpperCase() + variant.slice(1)}` as keyof typeof styles],
           styles[`textSize${size.charAt(0).toUpperCase() + size.slice(1)}` as keyof typeof styles],
-          icon ? { marginLeft: 8 } : {},
+          icon ? { marginLeft: Theme.tokens.spacing.sm } : {},
           textStyle
         ]}>
           {title}
@@ -89,20 +89,20 @@ const styles = StyleSheet.create({
   },
   // Sizes
   sm: {
-    paddingVertical: 6,
-    paddingHorizontal: 12,
+    paddingVertical: Theme.tokens.spacing.sm,
+    paddingHorizontal: Theme.tokens.spacing.md,
   },
   md: {
-    paddingVertical: 10,
-    paddingHorizontal: 16,
+    paddingVertical: Theme.tokens.spacing.md,
+    paddingHorizontal: Theme.tokens.spacing.lg,
   },
   lg: {
-    paddingVertical: 14,
-    paddingHorizontal: 24,
+    paddingVertical: Theme.tokens.spacing.lg,
+    paddingHorizontal: Theme.tokens.spacing.xxl,
   },
   // Text Styles
   text: {
-    fontWeight: '600',
+    fontWeight: Theme.tokens.typography.weight.semibold as TextStyle['fontWeight'],
     textAlign: 'center',
     fontFamily: Theme.tokens.typography.fontFamily.ui,
   },
@@ -120,12 +120,15 @@ const styles = StyleSheet.create({
   },
   // Text Sizes
   textSizeSm: {
-    fontSize: 12,
+    fontSize: Theme.tokens.typography.size.caption,
+    lineHeight: Theme.tokens.typography.lineHeight.caption,
   },
   textSizeMd: {
-    fontSize: 14,
+    fontSize: Theme.tokens.typography.size.bodySm,
+    lineHeight: Theme.tokens.typography.lineHeight.bodySm,
   },
   textSizeLg: {
-    fontSize: 16,
+    fontSize: Theme.tokens.typography.size.body,
+    lineHeight: Theme.tokens.typography.lineHeight.body,
   },
 });

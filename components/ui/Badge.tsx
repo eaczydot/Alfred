@@ -20,9 +20,9 @@ export function Badge({ label, variant = 'default', style, textStyle, ...props }
 
 const styles = StyleSheet.create({
   base: {
-    paddingVertical: 4,
-    paddingHorizontal: 8,
-    borderRadius: 6,
+    paddingVertical: Theme.tokens.spacing.xs,
+    paddingHorizontal: Theme.tokens.spacing.sm,
+    borderRadius: Theme.tokens.radius.sm,
     borderWidth: 1,
     alignSelf: 'flex-start',
   },
@@ -47,8 +47,9 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(74, 222, 128, 0.3)',
   },
   text: {
-    fontSize: 12,
-    fontWeight: '500',
+    fontSize: Theme.tokens.typography.size.caption,
+    lineHeight: Theme.tokens.typography.lineHeight.caption,
+    fontWeight: Theme.tokens.typography.weight.medium as TextStyle['fontWeight'],
     fontFamily: Theme.tokens.typography.fontFamily.mono,
   },
   textDefault: {

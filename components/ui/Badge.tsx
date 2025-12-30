@@ -27,24 +27,24 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
   },
   default: {
-    backgroundColor: 'rgba(255,255,255,0.1)',
-    borderColor: 'rgba(255,255,255,0.2)',
+    backgroundColor: Theme.tokens.color.surface.card,
+    borderColor: Theme.tokens.color.border.default,
   },
   accent: {
-    backgroundColor: 'rgba(0, 229, 255, 0.15)', // Cyan with opacity to match accent.primary
-    borderColor: Theme.tokens.color.border.accent,
+    backgroundColor: Theme.tokens.color.accent.primary,
+    borderColor: Theme.tokens.color.accent.primary,
   },
   outline: {
     backgroundColor: 'transparent',
     borderColor: Theme.tokens.color.border.default,
   },
   warn: {
-    backgroundColor: 'rgba(234, 179, 8, 0.15)',
-    borderColor: 'rgba(234, 179, 8, 0.3)',
+    backgroundColor: Theme.tokens.color.status.warn,
+    borderColor: Theme.tokens.color.status.warn,
   },
   success: {
-    backgroundColor: 'rgba(74, 222, 128, 0.15)',
-    borderColor: 'rgba(74, 222, 128, 0.3)',
+    backgroundColor: Theme.tokens.color.status.ok,
+    borderColor: Theme.tokens.color.status.ok,
   },
   text: {
     fontSize: 12,
@@ -55,15 +55,15 @@ const styles = StyleSheet.create({
     color: Theme.tokens.color.text.primary,
   },
   textAccent: {
-    color: Theme.tokens.color.accent.primary,
+    color: Theme.tokens.color.text.onAccent,
   },
   textOutline: {
     color: Theme.tokens.color.text.secondary,
   },
   textWarn: {
-    color: Theme.tokens.color.status.warn,
+    color: Theme.tokens.color.text.primary,
   },
   textSuccess: {
-    color: Theme.tokens.color.status.ok,
+    color: Theme.tokens.color.text.primary,
   },
 });

@@ -6,10 +6,16 @@ import { Theme } from '@/constants/theme';
 import { IncidentCard } from '@/components/IncidentCard';
 import { Badge } from '@/components/ui/Badge';
 import { useState } from 'react';
+import { useRouter } from 'expo-router';
 
 export default function FeedScreen() {
   const { reports, stats } = useApp();
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
+  const router = useRouter();
+
+  const handleReportPress = (id: string) => {
+    router.push(`/incident/${id}`);
+  };
 
   return (
     <View style={styles.container}>
@@ -56,6 +62,7 @@ export default function FeedScreen() {
                             key={report.id}
                             style={styles.gridItem}
                             activeOpacity={0.7}
+                            onPress={() => handleReportPress(report.id)}
                         >
                             <Image 
                                 source={{ uri: report.imageUri }} 
@@ -74,6 +81,7 @@ export default function FeedScreen() {
                     key={report.id} 
                     report={report}
                     style={styles.reportCard}
+                    onPress={() => handleReportPress(report.id)}
                   />
                 );
               })}

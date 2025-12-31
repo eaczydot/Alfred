@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, ViewStyle } from 'react-native';
+import { View, Text, StyleSheet, Image, ViewStyle, TouchableOpacity } from 'react-native';
 import { MapPin } from 'lucide-react-native';
 import { Theme } from '@/constants/theme';
 import { Card } from '@/components/ui/Card';
@@ -10,10 +10,11 @@ import { CATEGORY_CONFIG } from '@/constants/categories';
 interface IncidentCardProps {
   report: Report;
   style?: ViewStyle;
+  onPress?: () => void;
 }
 
-export function IncidentCard({ report, style }: IncidentCardProps) {
-  const category = CATEGORY_CONFIG[report.category];
+export function IncidentCard({ report, style, onPress }: IncidentCardProps) {
+  const category = CATEGORY_CONFIG[report.category] || CATEGORY_CONFIG['other'];
 
   const formatDate = (timestamp: number) => {
     const date = new Date(timestamp);
@@ -28,7 +29,7 @@ export function IncidentCard({ report, style }: IncidentCardProps) {
     return `${diffDays}d ago`;
   };
 
-  return (
+  const CardContent = (
     <Card 
       variant="glass"
       depth={1}
@@ -71,6 +72,16 @@ export function IncidentCard({ report, style }: IncidentCardProps) {
       </View>
     </Card>
   );
+
+  if (onPress) {
+    return (
+      <TouchableOpacity onPress={onPress} activeOpacity={0.9}>
+        {CardContent}
+      </TouchableOpacity>
+    );
+  }
+
+  return CardContent;
 }
 
 const styles = StyleSheet.create({

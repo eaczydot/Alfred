@@ -1,14 +1,15 @@
 import React from 'react';
-import { TouchableOpacity, Text, StyleSheet, TouchableOpacityProps, TextStyle, Platform } from 'react-native';
+import { TouchableOpacity, Text, StyleSheet, TouchableOpacityProps, TextStyle, Platform, View } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { Theme } from '@/constants/theme';
 
 interface ButtonProps extends TouchableOpacityProps {
   title?: string;
-  variant?: 'primary' | 'secondary' | 'glass' | 'ghost';
+  variant?: 'primary' | 'secondary' | 'glass' | 'ghost' | 'liquid';
   size?: 'sm' | 'md' | 'lg';
   icon?: React.ReactNode;
   textStyle?: TextStyle;
+  fullWidth?: boolean;
 }
 
 export function Button({ 
@@ -19,12 +20,16 @@ export function Button({
   style, 
   textStyle,
   onPress,
+  fullWidth,
   ...props 
 }: ButtonProps) {
   
   const handlePress = (e: any) => {
     if (Platform.OS !== 'web') {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      const hapticStyle = variant === 'liquid' 
+        ? Haptics.ImpactFeedbackStyle.Heavy 
+        : Haptics.ImpactFeedbackStyle.Light;
+      Haptics.impactAsync(hapticStyle);
     }
     onPress?.(e);
   };
@@ -35,6 +40,7 @@ export function Button({
         styles.base,
         styles[variant],
         styles[size],
+        fullWidth && styles.fullWidth,
         style
       ]}
       onPress={handlePress}
@@ -65,6 +71,9 @@ const styles = StyleSheet.create({
     borderRadius: Theme.tokens.radius.pill,
     borderWidth: 1,
   },
+  fullWidth: {
+    width: '100%',
+  },
   // Variants
   primary: {
     backgroundColor: Theme.tokens.color.accent.primary,
@@ -76,7 +85,7 @@ const styles = StyleSheet.create({
     borderColor: Theme.tokens.color.border.default,
   },
   glass: {
-    backgroundColor: 'rgba(0,0,0,0.35)', // mapped to glass from old colors
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
     borderColor: Theme.tokens.color.border.default,
     ...Platform.select({
       web: {
@@ -88,18 +97,28 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     borderColor: 'transparent',
   },
+  liquid: {
+    // Active state defined in logic or simplified here as the "Active" look
+    backgroundColor: Theme.tokens.color.accent.primary,
+    borderColor: 'transparent',
+    // Inner glow simulated with shadow for now
+    shadowColor: '#fff',
+    shadowOpacity: 0.2,
+    shadowRadius: 10,
+    elevation: 4,
+  },
   // Sizes
   sm: {
     paddingVertical: 6,
     paddingHorizontal: 12,
   },
   md: {
-    paddingVertical: 10,
-    paddingHorizontal: 16,
+    paddingVertical: 12, // Increased for touch targets
+    paddingHorizontal: 20,
   },
   lg: {
-    paddingVertical: 14,
-    paddingHorizontal: 24,
+    paddingVertical: 16,
+    paddingHorizontal: 28,
   },
   // Text Styles
   text: {
@@ -118,6 +137,10 @@ const styles = StyleSheet.create({
   },
   textGhost: {
     color: Theme.tokens.color.text.secondary,
+  },
+  textLiquid: {
+    color: Theme.tokens.color.text.onAccent,
+    fontWeight: '700',
   },
   // Text Sizes
   textSizeSm: {

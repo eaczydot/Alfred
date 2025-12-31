@@ -31,12 +31,12 @@ export function IncidentCard({ report, style }: IncidentCardProps) {
   return (
     <Card 
       variant="glass"
+      depth={1}
       style={[styles.reportCard, style]}
     >
       <View style={styles.cardHeader}>
            <View style={styles.userRow}>
                <View style={styles.avatarPlaceholder} />
-               {/* Simulate an anonymous ID if not present in report */}
                <Text style={styles.username}>CITIZEN {report.id.slice(-4)}</Text>
            </View>
            <Text style={styles.timeText}>{formatDate(report.timestamp)}</Text>
@@ -50,7 +50,7 @@ export function IncidentCard({ report, style }: IncidentCardProps) {
 
       <View style={styles.reportContent}>
         <View style={styles.tagRow}>
-           <Badge label={category.label} variant="outline" />
+           <Badge label={category.label} variant="glass" />
            <Badge label={`+${report.points} Impact`} variant="accent" />
         </View>
         
@@ -77,6 +77,7 @@ const styles = StyleSheet.create({
   reportCard: {
     padding: 0, 
     overflow: 'hidden',
+    marginBottom: 16,
   },
   cardHeader: {
     flexDirection: 'row',
@@ -84,7 +85,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 12,
     borderBottomWidth: 1,
-    borderBottomColor: Theme.tokens.color.border.default,
+    borderBottomColor: Theme.tokens.color.border.glass,
   },
   userRow: {
     flexDirection: 'row',
@@ -96,16 +97,16 @@ const styles = StyleSheet.create({
     height: 24,
     borderRadius: 12,
     backgroundColor: Theme.tokens.color.accent.primary,
+    opacity: 0.8,
   },
   username: {
-    fontSize: 12,
-    fontWeight: '600',
+    ...Theme.tokens.typography.tokens.label_technical,
     color: Theme.tokens.color.text.primary,
-    fontFamily: Theme.tokens.typography.fontFamily.mono,
   },
   timeText: {
     fontSize: 11,
     color: Theme.tokens.color.text.tertiary,
+    fontFamily: Theme.tokens.typography.fontFamily.mono,
   },
   reportImage: {
     width: '100%',
@@ -121,9 +122,8 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   reportDescription: {
-    fontSize: 14,
+    ...Theme.tokens.typography.tokens.body_glass,
     color: Theme.tokens.color.text.primary,
-    lineHeight: 20,
     marginBottom: 12,
   },
   locationContainer: {

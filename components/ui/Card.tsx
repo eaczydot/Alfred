@@ -39,17 +39,10 @@ const styles = StyleSheet.create({
   card: {
     borderColor: Theme.tokens.color.border.default,
     borderWidth: 1,
-    borderRadius: Theme.tokens.radius.lg, // 16 matches closer to 18
+    borderRadius: Theme.tokens.radius.lg,
     padding: 22,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 12,
-    },
-    shadowOpacity: 0.22,
-    shadowRadius: 35,
-    elevation: 5,
     overflow: 'hidden',
+    ...Theme.tokens.shadow.soft,
   },
   defaultContainer: {
     backgroundColor: Theme.tokens.color.surface.card,
@@ -59,7 +52,7 @@ const styles = StyleSheet.create({
       web: Theme.tokens.color.surface.glassStrong,
       default: Theme.tokens.color.surface.glass, // Slightly more transparent on native to let blur do work
     }),
-    borderColor: Theme.tokens.color.accent.primary,
+    borderColor: Theme.tokens.color.border.accent,
     ...Platform.select({
       web: {
         backdropFilter: 'blur(20px)',

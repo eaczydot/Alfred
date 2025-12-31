@@ -1,42 +1,79 @@
+import { Platform } from 'react-native';
+
+const uiFont =
+  Platform.select({
+    ios: 'SF Pro Display',
+    android: 'sans-serif-medium',
+    web: 'Inter, system-ui, -apple-system, sans-serif',
+    default: 'System'
+  }) || 'System';
+
+const monoFont =
+  Platform.select({
+    ios: 'SFMono-Regular',
+    android: 'monospace',
+    web: 'Menlo, SFMono-Regular, ui-monospace, monospace',
+    default: 'monospace'
+  }) || 'monospace';
+
 export const Theme = {
   tokens: {
     color: {
-      bg: ['#05070D'],
+      bg: ['#010101', '#0f111a', '#1a1a1a'],
       surface: {
-        card: '#0B0F18',
+        card: 'rgba(255,255,255,0.05)',
+        raised: 'rgba(255,255,255,0.08)',
         glass: 'rgba(11, 15, 24, 0.4)',
         glassStrong: 'rgba(11, 15, 24, 0.6)',
       },
       text: {
-        primary: '#F8FAFC',
-        secondary: '#E2E8F0',
-        tertiary: '#94A3B8',
-      },
-      accent: {
-        primary: '#22D3EE',
-        info: '#38BDF8',
-      },
-      status: {
-        warn: '#F59E0B',
-        ok: '#22C55E',
-        urgent: '#EF4444',
+        primary: '#ffffff',
+        secondary: 'rgba(255,255,255,0.72)',
+        tertiary: 'rgba(255,255,255,0.48)',
+        onAccent: '#ffffff'
       },
       border: {
-        default: 'rgba(255, 255, 255, 0.08)',
-        accent: '#22D3EE',
+        default: 'rgba(255,255,255,0.12)',
+        accent: 'rgba(5,64,244,0.45)'
       },
-    },
-    radius: {
-      lg: 16,
-      pill: 9999,
+      accent: {
+        primary: '#0540F4',
+        secondary: '#0b6bff',
+        info: '#fbbf24'
+      },
+      status: {
+        ok: '#22c55e',
+        warn: '#f59e0b',
+        urgent: '#ef4444'
+      }
     },
     typography: {
       fontFamily: {
-        ui: 'System',
-        mono: 'monospace',
-      },
+        ui: uiFont,
+        mono: monoFont
+      }
     },
-  },
-} as const;
-
-export type ThemeType = typeof Theme;
+    radius: {
+      sm: 8,
+      md: 12,
+      lg: 16,
+      pill: 999
+    },
+    shadow: {
+      soft: {
+        shadowColor: '#000',
+        shadowOpacity: 0.24,
+        shadowRadius: 16,
+        shadowOffset: { width: 0, height: 10 },
+        elevation: 6
+      },
+      glow: {
+        shadowColor: '#0540F4',
+        shadowOpacity: 0.16,
+        shadowRadius: 14,
+        shadowOffset: { width: 0, height: 8 },
+        elevation: 4
+      }
+    }
+  }
+};

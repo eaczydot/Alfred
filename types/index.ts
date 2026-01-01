@@ -6,36 +6,56 @@ export type IssueCategory =
   | 'trash'
   | 'broken_streetlight'
   | 'abandoned_vehicle'
-  | 'other';
+  | 'other'
+  | 'infrastructure' // From flow 01
+  | 'illegal_dumping'; // From flow 02
 
-export interface Report {
-  id: string;
-  category: IssueCategory;
-  imageUri: string;
-  description: string;
-  location: {
-    latitude: number;
-    longitude: number;
-    address?: string;
+// Data Schema Model: User Profile
+export interface UserProfile {
+  id: string; // uuid_v4
+  handle: string;
+  trust_score: number; // float 0.0 - 1.0
+  impact_credits: number; // integer
+  linked_channels: string[]; // ["311_API", "NEXTDOOR_OAUTH", etc]
+}
+
+// Data Schema Model: Incident Report
+export interface IncidentReport {
+  id: string; // uuid_v4
+  media_assets: {
+    url: string;
+    type: 'image' | 'video';
+    ai_tags: string[]; // ["asphalt", "hole", "hazard"]
+  }[];
+  ai_analysis: {
+    primary_category: IssueCategory;
+    confidence_score: number;
+    suggested_severity: 'low' | 'medium' | 'high' | 'urgent';
+    auto_description: string;
   };
-  timestamp: number;
-  points: number;
-  status: 'submitted' | 'in_progress' | 'resolved';
+  location: {
+    lat: number;
+    long: number;
+    geohash: string;
+    jurisdiction_id: string;
+    address?: string; // Optional helper
+  };
+  status_lifecycle: {
+    current: 'draft' | 'dispatched' | 'verified' | 'resolved';
+    dispatch_log: {
+      channel: string; // "311", "Nextdoor"
+      external_id: string;
+      status: string; // "received", "posted"
+    }[];
+  };
+  gamification: {
+    base_iss: number; // Impact Severity Score
+    community_multiplier: number;
+    total_impact_yield: number;
+  };
+  timestamp: number; // For sorting
 }
 
-export interface Achievement {
-  id: string;
-  title: string;
-  description: string;
-  icon: string;
-  threshold: number;
-  unlocked: boolean;
-}
-
-export interface UserStats {
-  totalReports: number;
-  totalPoints: number;
-  streak: number;
-  level: number;
-  achievements: Achievement[];
-}
+// Keeping legacy types for compatibility during migration if needed, 
+// or aliasing them to new types
+export type Report = IncidentReport; 

@@ -1,7 +1,7 @@
 import createContextHook from '@nkzw/create-context-hook';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useState, useCallback } from 'react';
-import { Report, UserStats } from '@/types';
+import { Report, UserStats, UserProfile } from '@/types';
 import { ACHIEVEMENTS } from '@/constants/categories';
 
 const STORAGE_KEY = 'civic_ai_data';
@@ -15,6 +15,13 @@ export const [AppProvider, useApp] = createContextHook(() => {
     level: 1,
     achievements: ACHIEVEMENTS.map(a => ({ ...a, unlocked: false }))
   });
+  const [userProfile, setUserProfile] = useState<UserProfile>({
+    id: 'uuid_v4',
+    handle: 'CITIZEN',
+    trust_score: 0.85,
+    impact_credits: 0,
+    linked_channels: ["311_API", "NEXTDOOR_OAUTH"]
+  });
   const [isLoading, setIsLoading] = useState(true);
 
   const loadData = useCallback(async () => {
@@ -23,7 +30,8 @@ export const [AppProvider, useApp] = createContextHook(() => {
       if (stored) {
         const data = JSON.parse(stored);
         setReports(data.reports || []);
-        setStats(s => data.stats || s);
+        if (data.stats) setStats(data.stats);
+        if (data.userProfile) setUserProfile(data.userProfile);
       }
     } catch (error) {
       console.error('Failed to load data:', error);
@@ -36,11 +44,12 @@ export const [AppProvider, useApp] = createContextHook(() => {
     loadData();
   }, [loadData]);
 
-  const saveData = async (newReports: Report[], newStats: UserStats) => {
+  const saveData = async (newReports: Report[], newStats: UserStats, newProfile: UserProfile) => {
     try {
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify({
         reports: newReports,
-        stats: newStats
+        stats: newStats,
+        userProfile: newProfile
       }));
     } catch (error) {
       console.error('Failed to save data:', error);
@@ -74,14 +83,21 @@ export const [AppProvider, useApp] = createContextHook(() => {
       achievements: updatedAchievements
     };
 
+    const newProfile = {
+      ...userProfile,
+      impact_credits: newPoints // Sync for simplicity, though schema separates them
+    };
+
     setReports(newReports);
     setStats(newStats);
-    saveData(newReports, newStats);
+    setUserProfile(newProfile);
+    saveData(newReports, newStats, newProfile);
   };
 
   return {
     reports,
     stats,
+    userProfile,
     isLoading,
     addReport
   };

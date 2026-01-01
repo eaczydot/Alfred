@@ -1,9 +1,10 @@
 import { StyleSheet, Text, View, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Trophy, Star, TrendingUp, Award, Flame, Gem, Shield, Activity, Target, Zap } from 'lucide-react-native';
+import { Trophy, Star, TrendingUp, Award, Flame, Gem, Shield, Activity, Target, Zap, Link } from 'lucide-react-native';
 import { useApp } from '@/contexts/AppContext';
 import { Theme } from '@/constants/theme';
 import { Card } from '@/components/ui/Card';
+import { Badge } from '@/components/ui/Badge';
 
 const ICON_MAP: Record<string, any> = {
   trophy: Trophy,
@@ -15,7 +16,7 @@ const ICON_MAP: Record<string, any> = {
 };
 
 export default function ProfileScreen() {
-  const { stats } = useApp();
+  const { stats, userProfile } = useApp();
   
   const levelProgress = (stats.totalPoints % 100) / 100;
   const pointsToNextLevel = 100 - (stats.totalPoints % 100);
@@ -29,7 +30,7 @@ export default function ProfileScreen() {
                 <Text style={styles.headerTitle}>Impact Report</Text>
             </View>
             <View style={styles.idBadge}>
-                <Text style={styles.idText}>ID: CITIZEN-{Math.floor(Math.random() * 10000).toString().padStart(4, '0')}</Text>
+                <Text style={styles.idText}>ID: {userProfile.id.slice(0, 8)}</Text>
             </View>
         </View>
 
@@ -38,11 +39,12 @@ export default function ProfileScreen() {
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
-          <Card variant="glass" style={styles.levelCard}>
+          {/* Identity & Trust Card */}
+          <Card variant="glass" depth={2} style={styles.levelCard}>
             <View style={styles.levelHeader}>
                 <View>
-                    <Text style={styles.levelLabel}>CURRENT TIER</Text>
-                    <Text style={styles.levelValue}>TIER {stats.level}</Text>
+                    <Text style={styles.levelLabel}>IDENTITY VERIFICATION</Text>
+                    <Text style={styles.levelValue}>{userProfile.handle}</Text>
                 </View>
                 <View style={styles.rankIcon}>
                     <Shield size={32} color={Theme.tokens.color.accent.primary} />
@@ -51,15 +53,12 @@ export default function ProfileScreen() {
             
             <View style={styles.progressContainer}>
               <View style={styles.progressRow}>
-                  <Text style={styles.progressLabel}>PROGRESS TO NEXT TIER</Text>
-                  <Text style={styles.progressValue}>{Math.floor(levelProgress * 100)}%</Text>
+                  <Text style={styles.progressLabel}>TRUST SCORE</Text>
+                  <Text style={styles.progressValue}>{(userProfile.trust_score * 100).toFixed(0)}%</Text>
               </View>
               <View style={styles.progressBarBg}>
-                <View style={[styles.progressBarFill, { width: `${levelProgress * 100}%` }]} />
+                <View style={[styles.progressBarFill, { width: `${userProfile.trust_score * 100}%`, backgroundColor: Theme.tokens.color.status.ok }]} />
               </View>
-              <Text style={styles.progressSubtext}>
-                {pointsToNextLevel} IMPACT POINTS REQUIRED FOR PROMOTION
-              </Text>
             </View>
           </Card>
 
@@ -67,7 +66,7 @@ export default function ProfileScreen() {
             <Card style={styles.statCard} variant="default">
               <View style={styles.statHeader}>
                 <TrendingUp size={16} color={Theme.tokens.color.accent.info} />
-                <Text style={styles.statLabel}>TOTAL IMPACT</Text>
+                <Text style={styles.statLabel}>IMPACT CREDITS</Text>
               </View>
               <Text style={styles.statValue}>{stats.totalPoints}</Text>
             </Card>
@@ -82,10 +81,14 @@ export default function ProfileScreen() {
 
             <Card style={styles.statCard} variant="default">
               <View style={styles.statHeader}>
-                <Zap size={16} color={Theme.tokens.color.status.warn} fill={Theme.tokens.color.status.warn} />
-                <Text style={styles.statLabel}>STREAK</Text>
+                <Link size={16} color={Theme.tokens.color.accent.primary} />
+                <Text style={styles.statLabel}>CHANNELS</Text>
               </View>
-              <Text style={styles.statValue}>{stats.streak}</Text>
+              <View style={styles.channelRow}>
+                {userProfile.linked_channels.map(channel => (
+                    <Badge key={channel} label={channel.split('_')[0]} variant="outline" style={{marginRight: 4}} />
+                ))}
+              </View>
             </Card>
 
             <Card style={styles.statCard} variant="default">
@@ -108,6 +111,7 @@ export default function ProfileScreen() {
                   <Card 
                     key={achievement.id} 
                     variant={achievement.unlocked ? "glass" : "default"}
+                    depth={1}
                     style={[
                       styles.achievementCard,
                       !achievement.unlocked && styles.achievementLocked
@@ -154,14 +158,14 @@ export default function ProfileScreen() {
           </View>
 
           <View style={styles.section}>
-            <Card variant="glass" style={styles.impactCard}>
+            <Card variant="glass" depth={3} style={styles.impactCard}>
               <View style={styles.terminalHeader}>
                   <Activity size={14} color={Theme.tokens.color.status.ok} />
                   <Text style={styles.terminalTitle}>SYSTEM LOG</Text>
               </View>
               <Text style={styles.impactText}>
-                <Text style={styles.prompt}>{'>'}</Text> Citizen has contributed <Text style={styles.highlight}>{stats.totalReports}</Text> verified reports.{'\n'}
-                <Text style={styles.prompt}>{'>'}</Text> Total community impact value evaluated at <Text style={styles.highlight}>{stats.totalPoints}</Text> points.{'\n'}
+                <Text style={styles.prompt}>{'>'}</Text> User Trust Score calibrated at <Text style={styles.highlight}>{(userProfile.trust_score * 100).toFixed(0)}%</Text>.{'\n'}
+                <Text style={styles.prompt}>{'>'}</Text> Linked to <Text style={styles.highlight}>{userProfile.linked_channels.length}</Text> external dispatch channels.{'\n'}
                 <Text style={styles.prompt}>{'>'}</Text> Status: <Text style={{color: Theme.tokens.color.status.ok}}>ACTIVE</Text>
               </Text>
             </Card>
@@ -190,17 +194,14 @@ const styles = StyleSheet.create({
     borderBottomColor: Theme.tokens.color.border.default,
   },
   kicker: {
-    fontSize: 10,
-    letterSpacing: 1,
-    textTransform: 'uppercase',
+    ...Theme.tokens.typography.tokens.label_technical,
     color: Theme.tokens.color.text.tertiary,
     marginBottom: 4,
-    fontFamily: Theme.tokens.typography.fontFamily.mono,
   },
   headerTitle: {
-    fontSize: 24,
-    fontWeight: '400',
+    ...Theme.tokens.typography.tokens.heading_lens,
     color: Theme.tokens.color.text.primary,
+    fontSize: 24,
     letterSpacing: -0.5,
   },
   idBadge: {
@@ -226,6 +227,7 @@ const styles = StyleSheet.create({
   levelCard: {
     marginBottom: 20,
     borderRadius: 12,
+    padding: 20,
   },
   levelHeader: {
     flexDirection: 'row',
@@ -234,17 +236,16 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   levelLabel: {
-    fontSize: 10,
+    ...Theme.tokens.typography.tokens.label_technical,
     color: Theme.tokens.color.text.tertiary,
-    letterSpacing: 1,
     marginBottom: 4,
-    fontFamily: Theme.tokens.typography.fontFamily.mono,
   },
   levelValue: {
-    fontSize: 32,
+    fontSize: 24,
     fontWeight: '700',
     color: Theme.tokens.color.text.primary,
     letterSpacing: -1,
+    fontFamily: Theme.tokens.typography.fontFamily.mono,
   },
   rankIcon: {
     padding: 8,
@@ -262,13 +263,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   progressLabel: {
-    fontSize: 10,
+    ...Theme.tokens.typography.tokens.label_technical,
     color: Theme.tokens.color.text.tertiary,
-    fontFamily: Theme.tokens.typography.fontFamily.mono,
   },
   progressValue: {
     fontSize: 12,
-    color: Theme.tokens.color.accent.primary,
+    color: Theme.tokens.color.status.ok,
     fontWeight: '700',
     fontFamily: Theme.tokens.typography.fontFamily.mono,
   },
@@ -282,12 +282,6 @@ const styles = StyleSheet.create({
     height: '100%',
     backgroundColor: Theme.tokens.color.accent.primary,
     borderRadius: 2,
-  },
-  progressSubtext: {
-    fontSize: 10,
-    color: Theme.tokens.color.text.tertiary,
-    marginTop: 4,
-    fontFamily: Theme.tokens.typography.fontFamily.mono,
   },
   statsGrid: {
     flexDirection: 'row',
@@ -308,10 +302,8 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   statLabel: {
-    fontSize: 10,
+    ...Theme.tokens.typography.tokens.label_technical,
     color: Theme.tokens.color.text.secondary,
-    fontWeight: '600',
-    letterSpacing: 0.5,
   },
   statValue: {
     fontSize: 24,
@@ -320,17 +312,19 @@ const styles = StyleSheet.create({
     letterSpacing: -0.5,
     fontFamily: Theme.tokens.typography.fontFamily.mono,
   },
+  channelRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 4,
+  },
   section: {
     marginBottom: 24,
   },
   sectionTitle: {
-    fontSize: 12,
-    fontWeight: '600',
+    ...Theme.tokens.typography.tokens.label_technical,
     color: Theme.tokens.color.text.secondary,
     marginBottom: 12,
-    letterSpacing: 1,
     paddingHorizontal: 4,
-    fontFamily: Theme.tokens.typography.fontFamily.mono,
   },
   achievementsList: {
     gap: 12,
@@ -409,11 +403,8 @@ const styles = StyleSheet.create({
     borderBottomColor: 'rgba(255,255,255,0.05)',
   },
   terminalTitle: {
-    fontSize: 10,
+    ...Theme.tokens.typography.tokens.label_technical,
     color: Theme.tokens.color.status.ok,
-    letterSpacing: 1,
-    fontWeight: '700',
-    fontFamily: Theme.tokens.typography.fontFamily.mono,
   },
   impactText: {
     fontSize: 13,

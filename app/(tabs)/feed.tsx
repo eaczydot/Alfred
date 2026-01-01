@@ -6,10 +6,16 @@ import { Theme } from '@/constants/theme';
 import { IncidentCard } from '@/components/IncidentCard';
 import { Badge } from '@/components/ui/Badge';
 import { useState } from 'react';
+import { useRouter } from 'expo-router';
 
 export default function FeedScreen() {
   const { reports, stats } = useApp();
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
+  const router = useRouter();
+
+  const handleReportPress = (id: string) => {
+    router.push(`/incident/${id}`);
+  };
 
   return (
     <View style={styles.container}>
@@ -42,9 +48,9 @@ export default function FeedScreen() {
         >
           {reports.length === 0 ? (
             <View style={styles.emptyState}>
-              <Text style={styles.emptyTitle}>NO DATA</Text>
+              <Text style={styles.emptyTitle}>NO SIGNAL</Text>
               <Text style={styles.emptyText}>
-                System waiting for input.
+                Local grid silent. Initiate patrol.
               </Text>
             </View>
           ) : (
@@ -56,6 +62,7 @@ export default function FeedScreen() {
                             key={report.id}
                             style={styles.gridItem}
                             activeOpacity={0.7}
+                            onPress={() => handleReportPress(report.id)}
                         >
                             <Image 
                                 source={{ uri: report.imageUri }} 
@@ -63,7 +70,7 @@ export default function FeedScreen() {
                                 resizeMode="cover"
                             />
                             <View style={styles.gridOverlay}>
-                                <Badge label={`+${report.points}`} variant="accent" style={styles.gridBadge} />
+                                <Badge label={`+${report.points}`} variant="glass" style={styles.gridBadge} />
                             </View>
                         </TouchableOpacity>
                     );
@@ -74,6 +81,7 @@ export default function FeedScreen() {
                     key={report.id} 
                     report={report}
                     style={styles.reportCard}
+                    onPress={() => handleReportPress(report.id)}
                   />
                 );
               })}
@@ -101,22 +109,24 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     borderBottomWidth: 1,
     borderBottomColor: Theme.tokens.color.border.default,
-    backgroundColor: Theme.tokens.color.bg[0],
+    backgroundColor: 'rgba(3, 3, 4, 0.8)', // Obsidian void with some transparency
     zIndex: 10,
+    ...Platform.select({
+        web: {
+            backdropFilter: 'blur(10px)',
+        }
+    })
   },
   kicker: {
-    fontSize: 10,
-    letterSpacing: 1,
-    textTransform: 'uppercase',
+    ...Theme.tokens.typography.tokens.label_technical,
     color: Theme.tokens.color.text.tertiary,
     marginBottom: 4,
-    fontFamily: Theme.tokens.typography.fontFamily.mono,
   },
   headerTitle: {
-    fontSize: 24,
-    fontWeight: '400',
+    ...Theme.tokens.typography.tokens.heading_lens,
     color: Theme.tokens.color.text.primary,
     letterSpacing: -0.5,
+    fontSize: 24, // Override for header size
   },
   headerRight: {
     flexDirection: 'row',
@@ -124,23 +134,23 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   pointsBadge: {
-    backgroundColor: 'rgba(255, 159, 10, 0.1)', // Amber
+    backgroundColor: 'rgba(255, 159, 10, 0.1)', // Amber/Warning base
     paddingHorizontal: 10,
     paddingVertical: 6,
-    borderRadius: 6,
+    borderRadius: Theme.tokens.radius.sm,
     borderWidth: 1,
-    borderColor: 'rgba(255, 159, 10, 0.2)', // Amber
+    borderColor: Theme.tokens.color.status.warn,
   },
   pointsText: {
     fontSize: 12,
     fontWeight: '700',
-    color: Theme.tokens.color.accent.info,
+    color: Theme.tokens.color.status.warn,
     fontFamily: Theme.tokens.typography.fontFamily.mono,
   },
   viewToggle: {
     padding: 8,
-    borderRadius: 8,
-    backgroundColor: Theme.tokens.color.surface.card,
+    borderRadius: Theme.tokens.radius.sm,
+    backgroundColor: 'rgba(255,255,255,0.05)',
     borderWidth: 1,
     borderColor: Theme.tokens.color.border.default,
   },
@@ -158,15 +168,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 40,
   },
   emptyTitle: {
-    fontSize: 18,
-    fontWeight: '700',
+    ...Theme.tokens.typography.tokens.display_impact,
+    fontSize: 24, // Scaled down
     color: Theme.tokens.color.text.secondary,
     marginBottom: 8,
-    letterSpacing: 2,
-    textTransform: 'uppercase',
   },
   emptyText: {
-    fontSize: 14,
+    ...Theme.tokens.typography.tokens.body_glass,
     color: Theme.tokens.color.text.tertiary,
     textAlign: 'center',
     fontFamily: Theme.tokens.typography.fontFamily.mono,
@@ -182,7 +190,7 @@ const styles = StyleSheet.create({
   gridItem: {
     width: (Dimensions.get('window').width - 42) / 2,
     height: (Dimensions.get('window').width - 42) / 2,
-    borderRadius: 12,
+    borderRadius: Theme.tokens.radius.md,
     overflow: 'hidden',
     position: 'relative',
     backgroundColor: Theme.tokens.color.surface.card,
@@ -199,12 +207,7 @@ const styles = StyleSheet.create({
     right: 8,
   },
   gridBadge: {
-    backgroundColor: 'rgba(0,0,0,0.6)',
-    ...Platform.select({
-      web: {
-        backdropFilter: 'blur(4px)',
-      }
-    }),
+    // handled by badge component
   },
   reportCard: {
     marginBottom: 16,
